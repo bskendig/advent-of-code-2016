@@ -18,7 +18,7 @@ enum Orientation: Int {
 
 var xPos = 0, yPos = 0, orientation = Orientation.North
 var visited: [Int : [Int : Bool]] = [0 : [0 : true]]
-var foundFirstRevisit = false
+var didFindFirstRevisit = false
 
 func getInput() -> String {
     let bundle = Bundle.main
@@ -34,10 +34,10 @@ func move(count: Int) {
         case .South: xPos += 1
         case .West: yPos -= 1
         }
-        if foundFirstRevisit { continue }
+        if didFindFirstRevisit { continue }
         if visited[xPos]?[yPos] != nil {
             print("been to \(xPos), \(yPos) before")
-            foundFirstRevisit = true
+            didFindFirstRevisit = true
         } else {
             if visited[xPos] == nil { visited[xPos] = [:] }
             visited[xPos]![yPos] = true
