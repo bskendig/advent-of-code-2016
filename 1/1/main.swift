@@ -21,8 +21,7 @@ var visited: [Int : [Int : Bool]] = [0 : [0 : true]]
 var didFindFirstRevisit = false
 
 func getInput() -> String {
-    let bundle = Bundle.main
-    let path = bundle.path(forResource: "input", ofType: "txt")
+    let path = Bundle.main.path(forResource: "input", ofType: "txt")
     return try! NSString(contentsOfFile: path!, encoding: String.Encoding.utf8.rawValue) as String
 }
 
@@ -36,7 +35,7 @@ func move(count: Int) {
         }
         if didFindFirstRevisit { continue }
         if visited[xPos]?[yPos] != nil {
-            print("been to \(xPos), \(yPos) before")
+            print("First revisited a location \(xPos + yPos) blocks away.")
             didFindFirstRevisit = true
         } else {
             if visited[xPos] == nil { visited[xPos] = [:] }
@@ -59,7 +58,7 @@ func main() {
             move(count: d)
         }
     }
-    print("ended at \(xPos), \(yPos)")
+    print("Shortest path is \(xPos + yPos) blocks away.")
 }
 
 main()
