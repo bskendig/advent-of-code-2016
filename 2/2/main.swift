@@ -13,25 +13,7 @@ func getInput() -> String {
     return try! NSString(contentsOfFile: path!, encoding: String.Encoding.utf8.rawValue) as String
 }
 
-let keypad1 = [
-    [" ", " ", " ", " ", " "],
-    [" ", "1", "2", "3", " "],
-    [" ", "4", "5", "6", " "],
-    [" ", "7", "8", "9", " "],
-    [" ", " ", " ", " ", " "]
-]
-
-let keypad2 = [
-    [" ", " ", " ", " ", " ", " ", " "],
-    [" ", " ", " ", "1", " ", " ", " "],
-    [" ", " ", "2", "3", "4", " ", " "],
-    [" ", "5", "6", "7", "8", "9", " "],
-    [" ", " ", "A", "B", "C", " ", " "],
-    [" ", " ", " ", "D", " ", " ", " "],
-    [" ", " ", " ", " ", " ", " ", " "]
-]
-
-func findCode(for keypad: [[String]], with instructions: [String], startingAt: (Int, Int)) -> String {
+func findCode(with instructions: [String], startingAt: (Int, Int), for keypad: [[String]]) -> String {
     var code: [String] = []
     var xPos = startingAt.0, yPos = startingAt.1
     for line in instructions {
@@ -53,8 +35,20 @@ func findCode(for keypad: [[String]], with instructions: [String], startingAt: (
 func main() {
     let text = getInput()
     let instructions = text.components(separatedBy: "\n")
-    print(findCode(for: keypad1, with: instructions, startingAt: (2, 2)))
-    print(findCode(for: keypad2, with: instructions, startingAt: (1, 3)))
+    print(findCode(with: instructions, startingAt: (2, 2), for: [
+        [" ", " ", " ", " ", " "],
+        [" ", "1", "2", "3", " "],
+        [" ", "4", "5", "6", " "],
+        [" ", "7", "8", "9", " "],
+        [" ", " ", " ", " ", " "]]))
+    print(findCode(with: instructions, startingAt: (1, 3), for: [
+        [" ", " ", " ", " ", " ", " ", " "],
+        [" ", " ", " ", "1", " ", " ", " "],
+        [" ", " ", "2", "3", "4", " ", " "],
+        [" ", "5", "6", "7", "8", "9", " "],
+        [" ", " ", "A", "B", "C", " ", " "],
+        [" ", " ", " ", "D", " ", " ", " "],
+        [" ", " ", " ", " ", " ", " ", " "]]))
 }
 
 main()
