@@ -29,14 +29,10 @@ func getInput() -> String {
 func move(count: Int) {
     for _ in 1...count {
         switch orientation {
-        case .North:
-            xPos -= 1
-        case .East:
-            yPos += 1
-        case .South:
-            xPos += 1
-        case .West:
-            yPos -= 1
+        case .North: xPos -= 1
+        case .East: yPos += 1
+        case .South: xPos += 1
+        case .West: yPos -= 1
         }
         if foundFirstRevisit { continue }
         if visited[xPos]?[yPos] != nil {
