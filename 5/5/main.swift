@@ -21,23 +21,32 @@ func md5(_ s: String) -> Data? {
     return digest
 }
 
-
 func main() {
     let doorID = "ojvtpuvg"
-    let length = 8
-    var password = [UInt8](repeating: 0, count: length)
-    var offset = 0, index = 0
-    while offset < length {
+    let passwordLength = 8
+    var password1 = [String](repeating: " ", count: passwordLength), offset1 = 0
+    var password2 = [String](repeating: " ", count: passwordLength), donePassword2 = false
+    var index = 0
+    while offset1 < passwordLength || !donePassword2 {
         let key = doorID + String(index)
         guard let data = md5(key) else { break }
         if data[0] == 0x00 && data[1] == 0x00 && data[2] < 0x10 {
-            print(data[2])
-            password[offset] = data[2]
-            offset += 1
+            // part 1
+            if offset1 < passwordLength {
+                password1[offset1] = String(format:"%X", data[2])
+                offset1 += 1
+            }
+            // part 2
+            let pos = Int(data[2]), val = UInt8(data[3] / 16)
+            if pos < passwordLength && password2[pos] == " " {
+                password2[pos] = String(format:"%X", val)
+                donePassword2 = password2.index(of: " ") == nil
+            }
         }
         index += 1
     }
-    print(password.map({ String(format:"%2X", $0) }).joined())
+    print(password1.joined())
+    print(password2.joined())
 }
 
 main()
