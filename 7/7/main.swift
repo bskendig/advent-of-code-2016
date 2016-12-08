@@ -55,10 +55,7 @@ func main() {
         var abaList: [String] = [], babList: [String] = []
         for (i, triplets) in checkPartsForTriplets.enumerated() {
             if i % 2 == 0 { abaList += triplets }
-            if i % 2 == 1 {
-                let reversedTriplets = triplets.map { String($0.characters.reversed()) }
-                babList += reversedTriplets
-            }
+            else { babList += triplets.map { String($0.characters.reversed()) } }
         }
         var hasSsl = false
         for aba in abaList {
