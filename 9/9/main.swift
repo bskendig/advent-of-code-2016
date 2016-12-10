@@ -13,57 +13,24 @@ func getInput() -> String {
     return try! NSString(contentsOfFile: path!, encoding: String.Encoding.utf8.rawValue) as String
 }
 
-let repeatRegex = try! NSRegularExpression(pattern: "^\\((\\d+)x(\\d+)\\)$", options: [])
-func doRepeat(_ repeatString: String, s: String) -> (String, String) {
-    let matches = repeatRegex.matches(in: repeatString, options: [], range: NSMakeRange(0, repeatString.characters.count))
-    let a = (1...2).map { Int((repeatString as NSString).substring(with: matches[0].rangeAt($0)))! }
-    let stringToRepeat = s.substring(to: s.index(s.startIndex, offsetBy: a[0]))
-    var repeatedString = ""
-    for _ in 1...a[1] {
-        repeatedString += stringToRepeat
-    }
-    let remaining = s.substring(from: s.index(s.startIndex, offsetBy: a[0]))
-    return (repeatedString, remaining)
+let markerRegex = try! NSRegularExpression(pattern: "\\((\\d+)x(\\d+)\\)", options: [])
+func decompressedLengthOf(_ s: String, usingDecompressedMarkers m: Bool = false) -> Int {
+    let matches = markerRegex.matches(in: s, options: [], range: NSMakeRange(0, s.characters.count))
+    if matches.isEmpty { return s.characters.count }
+    let a = (1...2).map { Int((s as NSString).substring(with: matches[0].rangeAt($0)))! }
+    // now a[0] is the sequence length, a[1] is the number of copies
+    let stringBeforeMarker = s.substring(to: s.index(s.startIndex, offsetBy: matches[0].rangeAt(1).location - 1)) // before "("
+    let appliesToRange = NSMakeRange(matches[0].rangeAt(2).location + matches[0].rangeAt(2).length + 1, a[0])  // after ")"
+    let stringAppliesTo = (s as NSString).substring(with: appliesToRange)
+    let stringRemaining = s.substring(from: s.index(s.startIndex, offsetBy: appliesToRange.location + appliesToRange.length))
+    let repeatedLength = m ? decompressedLengthOf(stringAppliesTo, usingDecompressedMarkers: true) : stringAppliesTo.characters.count
+    return stringBeforeMarker.characters.count + (repeatedLength * a[1]) + decompressedLengthOf(stringRemaining, usingDecompressedMarkers: m)
 }
 
 func main() {
-    let markerRegex = try! NSRegularExpression(pattern: "(\\(\\d+x\\d+\\))", options: [])
-    var done = ""
-    var doneCount = 0
-    var remaining = getInput().replacingOccurrences(of: "\n", with: "", options: [])
-    var lastCount = 0
-    while remaining != "" {
-        autoreleasepool {
-            let matches = markerRegex.matches(in: remaining, options: [], range: NSMakeRange(0, remaining.characters.count))
-            if matches.isEmpty {
-                //            done += remaining
-                doneCount += remaining.characters.count
-                remaining = ""
-            } else {
-                let markerRange = matches[0].rangeAt(1)
-                let nextDone = remaining.substring(to: remaining.index(remaining.startIndex, offsetBy: markerRange.location))  // before marker
-                //            done += nextDone
-                doneCount += nextDone.characters.count
-                let marker = (remaining as NSString).substring(with: markerRange)
-                remaining = remaining.substring(from: remaining.index(remaining.startIndex, offsetBy: markerRange.location + markerRange.length))
-
-                let result = doRepeat(marker, s: remaining)
-                //            done += result.0
-
-                //            doneCount += result.0.characters.count
-                //            remaining = result.1
-                
-                remaining = result.0 + result.1
-            }
-        }
-        if doneCount > lastCount + 1000 {
-            print("\(doneCount), \(remaining.characters.count)")
-            lastCount += 1000
-        }
-    }
-    print(done)
-    print(done.characters.count)
-    print(doneCount)
+    let s = getInput().replacingOccurrences(of: "\n", with: "", options: [])
+    print(decompressedLengthOf(s, usingDecompressedMarkers: false))
+    print(decompressedLengthOf(s, usingDecompressedMarkers: true))
 }
 
 main()
