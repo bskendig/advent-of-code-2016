@@ -29,25 +29,41 @@ func doRepeat(_ repeatString: String, s: String) -> (String, String) {
 func main() {
     let markerRegex = try! NSRegularExpression(pattern: "(\\(\\d+x\\d+\\))", options: [])
     var done = ""
+    var doneCount = 0
     var remaining = getInput().replacingOccurrences(of: "\n", with: "", options: [])
+    var lastCount = 0
     while remaining != "" {
-        let matches = markerRegex.matches(in: remaining, options: [], range: NSMakeRange(0, remaining.characters.count))
-        if matches.isEmpty {
-            done += remaining
-            remaining = ""
-        } else {
-            let markerRange = matches[0].rangeAt(1)
-            done += remaining.substring(to: remaining.index(remaining.startIndex, offsetBy: markerRange.location))  // before marker
-            let marker = (remaining as NSString).substring(with: markerRange)
-            remaining = remaining.substring(from: remaining.index(remaining.startIndex, offsetBy: markerRange.location + markerRange.length))
+        autoreleasepool {
+            let matches = markerRegex.matches(in: remaining, options: [], range: NSMakeRange(0, remaining.characters.count))
+            if matches.isEmpty {
+                //            done += remaining
+                doneCount += remaining.characters.count
+                remaining = ""
+            } else {
+                let markerRange = matches[0].rangeAt(1)
+                let nextDone = remaining.substring(to: remaining.index(remaining.startIndex, offsetBy: markerRange.location))  // before marker
+                //            done += nextDone
+                doneCount += nextDone.characters.count
+                let marker = (remaining as NSString).substring(with: markerRange)
+                remaining = remaining.substring(from: remaining.index(remaining.startIndex, offsetBy: markerRange.location + markerRange.length))
 
-            let result = doRepeat(marker, s: remaining)
-            done += result.0
-            remaining = result.1
+                let result = doRepeat(marker, s: remaining)
+                //            done += result.0
+
+                //            doneCount += result.0.characters.count
+                //            remaining = result.1
+                
+                remaining = result.0 + result.1
+            }
+        }
+        if doneCount > lastCount + 1000 {
+            print("\(doneCount), \(remaining.characters.count)")
+            lastCount += 1000
         }
     }
     print(done)
     print(done.characters.count)
+    print(doneCount)
 }
 
 main()
