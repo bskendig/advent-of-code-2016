@@ -29,7 +29,7 @@ func decompressedLengthOf(_ s: String, usingDecompressedMarkers m: Bool = false)
 
 func main() {
     let s = getInput().replacingOccurrences(of: "\n", with: "", options: [])
-    print(decompressedLengthOf(s, usingDecompressedMarkers: false))
+    print(decompressedLengthOf(s))
     print(decompressedLengthOf(s, usingDecompressedMarkers: true))
 }
 
